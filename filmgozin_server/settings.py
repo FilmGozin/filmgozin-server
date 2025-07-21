@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     # local
     "user.apps.UserConfig",
+    "movie.apps.MovieConfig",
 ]
 
 MIDDLEWARE = [
