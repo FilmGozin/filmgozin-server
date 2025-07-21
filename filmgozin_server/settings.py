@@ -46,6 +46,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # third party
+    "rest_framework",
+    "rest_framework.authtoken",
+    "phonenumber_field",
+    "drf_spectacular",
+
+    # local
+    "user.apps.UserConfig",
 ]
 
 MIDDLEWARE = [
@@ -106,12 +115,53 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = "static/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FilmGozin API',
+    'VERSION': '1.0.0',
+    'DESCRIPTION': 'Auto-docs for FilmGozin API',
+}
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# Phone number field settings
+PHONENUMBER_DEFAULT_REGION = 'IR'
+
+# SMS Provider settings
+SMS_PROVIDER = env.str('SMS_PROVIDER')
+SMS_API_KEY = env.str('SMS_API_KEY')
+SMS_TEMPLATE_NAME = env.str('SMS_TEMPLATE_NAME')
+
+# Custom user model
+AUTH_USER_MODEL = 'user.User'
