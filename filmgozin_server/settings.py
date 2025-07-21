@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     # local
     "user.apps.UserConfig",
     "movie.apps.MovieConfig",
+    "blog.apps.BlogConfig",
 ]
 
 MIDDLEWARE = [
@@ -147,6 +148,11 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'FilmGozin API',
     'VERSION': '1.0.0',
     'DESCRIPTION': 'Auto-docs for FilmGozin API',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVERS': [
+        # {'url': 'http://127.0.0.1:8000', 'description': 'Local dev server'},
+        {'url': 'https://filmgozin.com', 'description': 'Production'}
+    ],
 }
 
 # CORS settings

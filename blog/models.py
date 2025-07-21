@@ -1,0 +1,58 @@
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils.text import slugify
+
+User = get_user_model()
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(unique=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class Post(models.Model):
+    POST_TYPE_CHOICES = [
+        ('movie', 'Movie'),
+        ('series', 'Series'),
+        ('interview', 'Interview'),
+        ('news', 'Hollywood News'),
+        ('production', 'Film Production'),
+        ('criticism', 'Criticism'),
+    ]
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    thumbnail = models.ImageField(upload_to='blog_thumbnails/')
+    post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES)
+    content = models.TextField()
+    release_date = models.DateField()
+    tags = models.ManyToManyField(Tag, related_name='posts')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            while Post.objects.filter(slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-release_date', '-created_at']
