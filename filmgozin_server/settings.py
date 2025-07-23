@@ -10,27 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 import environ
-import os
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False)
 )
 
-# Build paths inside the project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
+DJANGO_ENV = os.environ.get("DJANGO_ENV", "development")
 
-DJANGO_ENV = os.getenv('DJANGO_ENV', 'dev')
+env_file = ".env.dev" if DJANGO_ENV == "development" else ".env.prod"
+env.read_env(os.path.join(BASE_DIR, env_file))
 
-env_file = os.path.join(BASE_DIR, f'.env.{DJANGO_ENV}')
-if os.path.exists(env_file):
-    environ.Env.read_env(env_file)
-
-DEBUG = env('DEBUG')
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env.bool("DEBUG")
 DATABASES = {
     'default': env.db(),
 }
