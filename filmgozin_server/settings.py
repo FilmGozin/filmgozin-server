@@ -20,13 +20,19 @@ env = environ.Env(
     DEBUG=(bool, False)
 )
 
+# Detect deployment environment
 DJANGO_ENV = os.environ.get("DJANGO_ENV", "development")
 
-env_file = ".env.dev" if DJANGO_ENV == "development" else ".env.prod"
-env.read_env(os.path.join(BASE_DIR, env_file))
+# Only read local .env files if they exist (for local dev)
+env_file = os.path.join(BASE_DIR, ".env.dev" if DJANGO_ENV == "development" else ".env.prod")
+if os.path.exists(env_file):
+    env.read_env(env_file)
+# Else, rely on actual environment variables (like on Liara)
 
+# Now use environment variables (from .env file or system)
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG")
+
 DATABASES = {
     'default': env.db(),
 }
