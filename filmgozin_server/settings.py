@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,11 +24,21 @@ env = environ.Env(
 # Detect deployment environment
 DJANGO_ENV = os.environ.get("DJANGO_ENV", "development")
 
-# Only read local .env files if they exist (for local dev)
+# Only read local .env files if they exist
 env_file = os.path.join(BASE_DIR, ".env.dev" if DJANGO_ENV == "development" else ".env.prod")
 if os.path.exists(env_file):
     env.read_env(env_file)
-# Else, rely on actual environment variables (like on Liara)
+
+# Determine if we're in collectstatic mode
+IS_COLLECTSTATIC = os.environ.get("COLLECTSTATIC", "") == "1"
+
+try:
+    SECRET_KEY = env("SECRET_KEY")
+except ImproperlyConfigured:
+    if IS_COLLECTSTATIC:
+        SECRET_KEY = "temporary-dummy-secret"
+    else:
+        raise ImproperlyConfigured("Set the SECRET_KEY environment variable")
 
 # Now use environment variables (from .env file or system)
 SECRET_KEY = env("SECRET_KEY")
