@@ -39,7 +39,8 @@ except ImproperlyConfigured:
 
 # Now use environment variables (from .env file or system)
 SECRET_KEY ="django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"
-DEBUG = env.bool("DEBUG")
+# DEBUG = env.bool("DEBUG")
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -52,7 +53,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "filmgozin.com", "www.filmgozin.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "filmgozin.com", "www.filmgozin.com", "filmgozin.liara.run", "filmgozin-client.liara.run"]
 
 # Application definition
 
@@ -176,6 +177,7 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://filmgozin-client.liara.run",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
