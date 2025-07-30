@@ -1,7 +1,11 @@
 {
+  "app": "filmgozin-server",
+  "port": 80,
   "build": {
+    "location": "iran",
     "env": {
       "COLLECTSTATIC": "1"
     }
-  }
+  },
+  "disks": []
 }
