@@ -41,7 +41,7 @@ except ImproperlyConfigured:
         raise ImproperlyConfigured("Set the SECRET_KEY environment variable")
 
 # Now use environment variables (from .env file or system)
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY ="django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"
 DEBUG = env.bool("DEBUG")
 
 DATABASES = {
