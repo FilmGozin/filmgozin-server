@@ -42,7 +42,7 @@ SECRET_KEY ="django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"
 DEBUG = env.bool("DEBUG")
 
 DATABASES = {
-    'default': env.db(),
+    'default': "postgresql://root:1AeXaygMpcIrEknA8VV9Ab31@filmgozin-database:5432/postgres",
 }
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "filmgozin.com", "www.filmgozin.com"]
