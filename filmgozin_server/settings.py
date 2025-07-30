@@ -35,10 +35,7 @@ IS_COLLECTSTATIC = os.environ.get("COLLECTSTATIC", "") == "1"
 try:
     SECRET_KEY = env("SECRET_KEY")
 except ImproperlyConfigured:
-    if IS_COLLECTSTATIC:
-        SECRET_KEY = "temporary-dummy-secret"
-    else:
-        raise ImproperlyConfigured("Set the SECRET_KEY environment variable")
+    SECRET_KEY = "django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"  # ⚠️ Not safe for production!
 
 # Now use environment variables (from .env file or system)
 SECRET_KEY ="django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"

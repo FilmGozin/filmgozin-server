@@ -4,7 +4,13 @@
   "build": {
     "location": "iran",
     "env": {
-      "COLLECTSTATIC": "1"
+      "COLLECTSTATIC": "1",
+      "SECRET_KEY": "django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-",
+      "DEBUG": "False",
+      "DATABASE_URL": "postgresql://root:1AeXaygMpcIrEknA8VV9Ab31@filmgozin-database:5432/postgres",
+      "SMS_PROVIDER": "ghasedak",
+      "SMS_TEMPLATE_NAME": "FilmGozin",
+      "SMS_API_KEY": "fbab51c9ba045976625bb23b93c01d860aca3515580a51d4e4bd64a9d1fdac2eb9r293PhfVoYV3im"
     }
   },
   "disks": []
