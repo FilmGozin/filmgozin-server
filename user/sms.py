@@ -86,5 +86,5 @@ def get_sms_provider() -> SMSProvider:
         'ghasedak': GhasedakProvider,
         'kavenegar': KavenegarProvider,
     }
-    provider_class = providers.get(provider_name.lower(), ConsoleProvider)
+    provider_class = providers.get(provider_name.lower(), GhasedakProvider)
     return provider_class()
