@@ -169,7 +169,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'SERVERS': [
         # {'url': 'http://127.0.0.1:8000', 'description': 'Local dev server'},
-        {'url': 'https://filmgozin.com', 'description': 'Production'}
+        {'url': 'https://filmgozin-server.liara.run', 'description': 'Production'}
     ],
 }
 
