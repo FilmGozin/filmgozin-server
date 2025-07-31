@@ -106,7 +106,9 @@ class AuthenticationAPITest(APITestCase):
         response = self.client.post(self.signup_url, data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('non_field_errors', response.data)
+        self.assertIn('error', response.data)
+        self.assertIn('details', response.data)
+        self.assertIn('password_repeat', response.data['details'])
 
     def test_user_signup_duplicate_email(self):
         """Test signup with duplicate email"""
@@ -120,7 +122,9 @@ class AuthenticationAPITest(APITestCase):
         response = self.client.post(self.signup_url, self.user_data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('email', response.data)
+        self.assertIn('error', response.data)
+        self.assertIn('details', response.data)
+        self.assertIn('email', response.data['details'])
 
     def test_user_signup_duplicate_username(self):
         """Test signup with duplicate username"""
@@ -135,7 +139,9 @@ class AuthenticationAPITest(APITestCase):
         response = self.client.post(self.signup_url, self.user_data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('username', response.data)
+        self.assertIn('error', response.data)
+        self.assertIn('details', response.data)
+        self.assertIn('username', response.data['details'])
 
     def test_user_signup_weak_password(self):
         """Test signup with weak password"""
@@ -148,7 +154,8 @@ class AuthenticationAPITest(APITestCase):
         # In test settings, password validation is disabled, so this should pass
         # In production, this would fail with weak password
         if response.status_code == status.HTTP_400_BAD_REQUEST:
-            self.assertIn('password', response.data)
+            self.assertIn('error', response.data)
+            self.assertIn('details', response.data)
         else:
             # If password validation is disabled, the signup should succeed
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -174,7 +181,9 @@ class AuthenticationAPITest(APITestCase):
         response = self.client.post(self.login_url, self.login_data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('non_field_errors', response.data)
+        self.assertIn('error', response.data)
+        self.assertIn('details', response.data)
+        self.assertIn('non_field_errors', response.data['details'])
 
     def test_user_login_wrong_password(self):
         """Test login with wrong password"""
@@ -190,7 +199,9 @@ class AuthenticationAPITest(APITestCase):
         response = self.client.post(self.login_url, data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('non_field_errors', response.data)
+        self.assertIn('error', response.data)
+        self.assertIn('details', response.data)
+        self.assertIn('non_field_errors', response.data['details'])
 
     def test_email_verification_success(self):
         """Test successful email verification"""
