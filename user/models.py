@@ -44,15 +44,37 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email or str(self.phone_number)
+        return self.email or str(self.phone_number) or self.username or 'Anonymous User'
 
     def clean(self):
         if not self.email and not self.phone_number:
             raise ValueError(_('Either email or phone number must be provided'))
 
     def save(self, *args, **kwargs):
-        self.clean()
+        # Ensure we have at least one identifier
+        if not self.email and not self.phone_number:
+            raise ValueError(_('Either email or phone number must be provided'))
+        
+        # If using email as USERNAME_FIELD, ensure it's not empty when saving
+        if not self.email and self.phone_number:
+            # For phone-only users, we'll use a placeholder email
+            # This is a workaround for Django's authentication system
+            if not self.pk:  # Only for new users
+                self.email = f"phone_{self.phone_number.national_number}@filmgozin.local"
+        
         super().save(*args, **kwargs)
+
+    @property
+    def display_name(self):
+        """Return the best available display name"""
+        if self.username:
+            return self.username
+        elif self.email and '@' in self.email and not self.email.startswith('phone_'):
+            return self.email.split('@')[0]
+        elif self.phone_number:
+            return str(self.phone_number)
+        else:
+            return 'Anonymous User'
 
 
 class Profile(models.Model):

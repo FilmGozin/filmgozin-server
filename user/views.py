@@ -108,19 +108,37 @@ class UserSignupView(APIView):
                         }, status=status.HTTP_201_CREATED)
                         
                 except IntegrityError as e:
-                    return Response({
-                        'error': 'Database integrity error',
-                        'details': 'User creation failed due to database constraints'
-                    }, status=status.HTTP_400_BAD_REQUEST)
+                    # Handle specific integrity constraint violations
+                    error_message = str(e)
+                    if 'username' in error_message.lower():
+                        return Response({
+                            'error': 'Username already exists',
+                            'details': 'This username is already taken. Please choose a different username.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    elif 'email' in error_message.lower():
+                        return Response({
+                            'error': 'Email already exists',
+                            'details': 'A user with this email address already exists. Please use a different email or try logging in.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    elif 'phone_number' in error_message.lower():
+                        return Response({
+                            'error': 'Phone number already exists',
+                            'details': 'This phone number is already registered with another account.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response({
+                            'error': 'Database integrity error',
+                            'details': 'User creation failed due to database constraints. Please check your input data.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
                 except DatabaseError as e:
                     return Response({
                         'error': 'Database error',
-                        'details': 'Failed to create user due to database issues'
+                        'details': 'Failed to create user due to database issues. Please try again later.'
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 except Exception as e:
                     return Response({
                         'error': 'User creation failed',
-                        'details': str(e)
+                        'details': f'An unexpected error occurred: {str(e)}'
                     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
             return Response({
@@ -131,7 +149,7 @@ class UserSignupView(APIView):
         except Exception as e:
             return Response({
                 'error': 'Unexpected error occurred',
-                'details': str(e)
+                'details': f'Server error: {str(e)}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -318,15 +336,44 @@ class VerifyPhoneNumberOTPView(APIView):
                         # Clear the OTP from cache
                         cache.delete(cache_key)
 
-                        user, created = User.objects.get_or_create(
-                            phone_number=phone_number,
-                            defaults={'is_phone_verified': True}
-                        )
-                        if not created:
+                        # Check if user already exists with this phone number
+                        try:
+                            user = User.objects.get(phone_number=phone_number)
+                            # User exists, just verify the phone number
                             user.is_phone_verified = True
                             user.save()
+                        except User.DoesNotExist:
+                            # Create new user with phone number
+                            # Check if we need to generate a unique username
+                            base_username = f"user_{phone_number.national_number}"
+                            username = base_username
+                            counter = 1
+                            
+                            # Ensure unique username
+                            while User.objects.filter(username=username).exists():
+                                username = f"{base_username}_{counter}"
+                                counter += 1
+                            
+                            # Create placeholder email for phone-only users
+                            placeholder_email = f"phone_{phone_number.national_number}@filmgozin.local"
+                            
+                            # Ensure email is unique
+                            email_counter = 1
+                            while User.objects.filter(email=placeholder_email).exists():
+                                placeholder_email = f"phone_{phone_number.national_number}_{email_counter}@filmgozin.local"
+                                email_counter += 1
+                            
+                            user = User.objects.create_user(
+                                phone_number=phone_number,
+                                username=username,
+                                email=placeholder_email,
+                                is_phone_verified=True
+                            )
 
+                        # Ensure profile exists
                         Profile.objects.get_or_create(user=user)
+                        
+                        # Create or get authentication token
                         token, _ = Token.objects.get_or_create(user=user)
 
                         return Response({
@@ -334,11 +381,24 @@ class VerifyPhoneNumberOTPView(APIView):
                             'user': UserSerializer(user).data,
                             'token': token.key
                         })
+                        
                     except IntegrityError as e:
-                        return Response({
-                            'error': 'Database integrity error',
-                            'details': 'Failed to update user verification status'
-                        }, status=status.HTTP_400_BAD_REQUEST)
+                        # Handle specific integrity errors
+                        if 'phone_number' in str(e):
+                            return Response({
+                                'error': 'Phone number already exists',
+                                'details': 'This phone number is already registered with another account'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+                        elif 'username' in str(e):
+                            return Response({
+                                'error': 'Username conflict',
+                                'details': 'Unable to create unique username for this phone number'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+                        else:
+                            return Response({
+                                'error': 'Database integrity error',
+                                'details': 'Failed to update user verification status due to data constraints'
+                            }, status=status.HTTP_400_BAD_REQUEST)
                     except DatabaseError as e:
                         return Response({
                             'error': 'Database error',

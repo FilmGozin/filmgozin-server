@@ -4,6 +4,21 @@
 
 The FilmGozin API has been updated with comprehensive error handling to provide specific, user-friendly error messages instead of generic 500 errors. All endpoints now return structured error responses with clear error types and detailed explanations.
 
+## Recent Fixes (Latest Update)
+
+### Database Error Fixes
+
+**Fixed Issues:**
+1. **Phone Number Verification Database Errors**: Resolved constraint violations when creating users with phone numbers
+2. **Signup Database Errors**: Fixed table existence and constraint issues during user registration
+3. **User Model Improvements**: Enhanced User model to handle email/phone number requirements properly
+
+**Key Improvements:**
+- Better handling of phone-only users with placeholder emails
+- Improved unique constraint handling for usernames and emails
+- Enhanced error messages for specific database constraint violations
+- Proper migration handling for database schema changes
+
 ## Error Response Format
 
 All error responses now follow this consistent format:
@@ -47,11 +62,23 @@ The API uses appropriate HTTP status codes:
 **Duplicate User Errors (400 Bad Request):**
 ```json
 {
-    "error": "Validation failed",
-    "details": {
-        "email": ["A user with this email address already exists. Please use a different email or try logging in."],
-        "username": ["This username is already taken. Please choose a different username."]
-    }
+    "error": "Username already exists",
+    "details": "This username is already taken. Please choose a different username."
+}
+```
+
+```json
+{
+    "error": "Email already exists",
+    "details": "A user with this email address already exists. Please use a different email or try logging in."
+}
+```
+
+**Database Constraint Errors (400 Bad Request):**
+```json
+{
+    "error": "Database integrity error",
+    "details": "User creation failed due to database constraints. Please check your input data."
 }
 ```
 
@@ -59,7 +86,7 @@ The API uses appropriate HTTP status codes:
 ```json
 {
     "error": "Database error",
-    "details": "Failed to create user due to database issues"
+    "details": "Failed to create user due to database issues. Please try again later."
 }
 ```
 
@@ -184,6 +211,22 @@ The API uses appropriate HTTP status codes:
 {
     "error": "OTP expired or invalid",
     "details": "The OTP code has expired or was never sent"
+}
+```
+
+**Phone Number Already Exists (400 Bad Request):**
+```json
+{
+    "error": "Phone number already exists",
+    "details": "This phone number is already registered with another account"
+}
+```
+
+**Username Conflict (400 Bad Request):**
+```json
+{
+    "error": "Username conflict",
+    "details": "Unable to create unique username for this phone number"
 }
 ```
 
@@ -326,6 +369,15 @@ Run tests with:
 python manage.py test user.tests --settings=test_settings
 ```
 
+### Database Error Fix Verification
+
+To verify that the database errors are fixed, run:
+```bash
+python3 test_fixes.py
+```
+
+This will test both signup and phone verification endpoints to ensure they no longer return database errors.
+
 ## Best Practices
 
 1. **Always check the `error` field** for the error type
@@ -341,4 +393,21 @@ If you're updating from the previous version:
 1. Update your error handling code to check for the new `error` and `details` fields
 2. Replace direct field access with `response.data['details'][field_name]`
 3. Handle the new 503 status code for service unavailability
-4. Update any hardcoded error message checks 
+4. Update any hardcoded error message checks
+5. **Run migrations** to ensure database schema is up to date:
+   ```bash
+   python manage.py migrate --settings=test_settings
+   ```
+
+## Database Schema Requirements
+
+**Important**: Ensure all migrations are applied before testing:
+```bash
+python manage.py migrate --settings=test_settings
+```
+
+The User model now properly handles:
+- Phone-only users with placeholder emails
+- Unique constraints for username, email, and phone number
+- Proper validation for required fields
+- Better error handling for database constraints 
