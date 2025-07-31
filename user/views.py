@@ -1,6 +1,11 @@
 import random
+import uuid
+from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +18,9 @@ from .serializers import (
     UserSerializer,
     ProfileSerializer,
     ContactMessageSerializer,
+    UserSignupSerializer,
+    UserLoginSerializer,
+    EmailVerificationSerializer,
 )
 
 User = get_user_model()
@@ -23,7 +31,141 @@ def send_otp(phone_number, code):
     return sms_provider.send_otp(phone_number, code)
 
 
-class RequestOTPView(APIView):
+def send_verification_email(user):
+    """Send verification email with OTP token"""
+    token = str(uuid.uuid4())
+    user.email_verification_token = token
+    user.email_verification_expires = timezone.now() + timedelta(hours=24)
+    user.save()
+    
+    subject = 'Verify your email address - FilmGozin'
+    message = f"""
+    Hello {user.username},
+    
+    Please verify your email address by clicking the link below:
+    
+    {settings.FRONTEND_URL}/verify-email?token={token}
+    
+    This link will expire in 24 hours.
+    
+    If you didn't create an account, please ignore this email.
+    
+    Best regards,
+    FilmGozin Team
+    """
+    
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
+
+
+class UserSignupView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            # Create profile for the user
+            Profile.objects.get_or_create(user=user)
+            
+            # Send verification email
+            if send_verification_email(user):
+                return Response({
+                    'message': 'User registered successfully. Please check your email to verify your account.',
+                    'user': UserSerializer(user).data
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    'message': 'User registered successfully but failed to send verification email.',
+                    'user': UserSerializer(user).data
+                }, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, _ = Token.objects.get_or_create(user=user)
+            
+            return Response({
+                'message': 'Login successful',
+                'user': UserSerializer(user).data,
+                'token': token.key
+            })
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailVerificationView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        serializer = EmailVerificationSerializer(data=request.data)
+        if serializer.is_valid():
+            token = serializer.validated_data['token']
+            
+            try:
+                user = User.objects.get(
+                    email_verification_token=token,
+                    email_verification_expires__gt=timezone.now()
+                )
+                
+                user.is_email_verified = True
+                user.email_verification_token = None
+                user.email_verification_expires = None
+                user.save()
+                
+                return Response({
+                    'message': 'Email verified successfully',
+                    'user': UserSerializer(user).data
+                })
+                
+            except User.DoesNotExist:
+                return Response({
+                    'error': 'Invalid or expired verification token'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResendVerificationEmailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        user = request.user
+        
+        if user.is_email_verified:
+            return Response({
+                'error': 'Email is already verified'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if send_verification_email(user):
+            return Response({
+                'message': 'Verification email sent successfully'
+            })
+        else:
+            return Response({
+                'error': 'Failed to send verification email'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class RequestPhonenumberOTPView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -45,7 +187,7 @@ class RequestOTPView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class VerifyOTPView(APIView):
+class VerifyPhoneNumberOTPView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):

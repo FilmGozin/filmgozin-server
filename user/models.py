@@ -5,15 +5,19 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, phone_number, password=None, **extra_fields):
-        if not phone_number:
-            raise ValueError(_('The Phone Number must be set'))
-        user = self.model(phone_number=phone_number, **extra_fields)
+    def create_user(self, phone_number=None, email=None, password=None, **extra_fields):
+        if not phone_number and not email:
+            raise ValueError(_('Either Phone Number or Email must be set'))
+        
+        if email:
+            email = self.normalize_email(email)
+        
+        user = self.model(phone_number=phone_number, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone_number, password=None, **extra_fields):
+    def create_superuser(self, phone_number=None, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -22,22 +26,33 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
 
-        return self.create_user(phone_number, password, **extra_fields)
+        return self.create_user(phone_number, email, password, **extra_fields)
 
 
 class User(AbstractUser):
-    username = None
-    phone_number = PhoneNumberField(unique=True)
-    email = models.EmailField(_('email address'), blank=True)
+    username = models.CharField(max_length=150, unique=True, null=True, blank=True)
+    phone_number = PhoneNumberField(unique=True, null=True, blank=True)
+    email = models.EmailField(_('email address'), unique=True, null=True, blank=True)
     is_phone_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
+    email_verification_token = models.CharField(max_length=100, null=True, blank=True)
+    email_verification_expires = models.DateTimeField(null=True, blank=True)
 
-    USERNAME_FIELD = 'phone_number'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
     def __str__(self):
-        return str(self.phone_number)
+        return self.email or str(self.phone_number)
+
+    def clean(self):
+        if not self.email and not self.phone_number:
+            raise ValueError(_('Either email or phone number must be provided'))
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Profile(models.Model):

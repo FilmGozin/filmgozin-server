@@ -18,7 +18,7 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG=(bool, True)
 )
 
 # Detect deployment environment
@@ -175,8 +175,8 @@ SPECTACULAR_SETTINGS = {
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://filmgozin.com",
     "https://filmgozin-client.liara.run",
 ]
 CORS_ALLOW_CREDENTIALS = True
@@ -191,3 +191,15 @@ SMS_TEMPLATE_NAME = "FilmGozin"
 
 # Custom user model
 AUTH_USER_MODEL = 'user.User'
+
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # You can change this to your preferred email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'your-app-password'  # Replace with your app password
+DEFAULT_FROM_EMAIL = 'noreply@filmgozin.com'
+
+# Frontend URL for email verification links
+FRONTEND_URL = 'https://filmgozin-client.liara.run'  # Replace with your frontend URL
