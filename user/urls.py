@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     RequestPhonenumberOTPView,
     VerifyPhoneNumberOTPView,
+    UserListView,
     ProfileView,
     ContactMessageView,
     QuestionnaireView,
@@ -25,6 +26,7 @@ urlpatterns = [
     path('verify-phonenumber/', VerifyPhoneNumberOTPView.as_view(), name='verify-phonenumber'),
 
     # User Profile
+    path('users/', UserListView.as_view(), name='user-list'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('questionnaire/', QuestionnaireView.as_view(), name='questionnaire'),
 

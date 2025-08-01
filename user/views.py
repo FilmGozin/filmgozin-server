@@ -575,3 +575,18 @@ class QuestionnaireView(APIView):
                 'error': 'Failed to delete questionnaire',
                 'details': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class UserListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        try:
+            users = User.objects.all()
+            serializer = UserSerializer(users, many=True)
+            return Response({'users': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve users',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
