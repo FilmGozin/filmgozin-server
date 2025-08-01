@@ -4,6 +4,10 @@ from . import views
 app_name = 'movie'
 
 urlpatterns = [
+    # Movie details and genres
+    path('movies/<int:movie_id>/', views.MovieDetailView.as_view(), name='movie-detail'),
+    path('genres/', views.GenreListView.as_view(), name='genre-list'),
+    
     # Search and recommendations
     path('search/', views.MovieSearchView.as_view(), name='search'),
     path('similar/', views.SimilarMoviesView.as_view(), name='similar-movies'),

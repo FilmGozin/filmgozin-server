@@ -118,15 +118,26 @@ class UserLoginSerializer(serializers.Serializer):
         password = attrs.get('password')
         
         if email and password:
-            user = authenticate(email=email, password=password)
-            if not user:
+            # First check if user exists with this email
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
                 raise serializers.ValidationError({
-                    'non_field_errors': 'Invalid email address or password. Please check your credentials and try again.'
+                    'email': 'No account found with this email address. Please check your email or sign up for a new account.'
                 })
+            
+            # Then check if password is correct
+            if not user.check_password(password):
+                raise serializers.ValidationError({
+                    'password': 'Incorrect password. Please check your password and try again.'
+                })
+            
+            # Check if user is active
             if not user.is_active:
                 raise serializers.ValidationError({
                     'non_field_errors': 'Your account has been disabled. Please contact support for assistance.'
                 })
+            
             attrs['user'] = user
         else:
             raise serializers.ValidationError({
@@ -200,10 +211,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
-        fields = ('id', 'name', 'email', 'phone_number', 'message', 'created_at', 'is_read')
+        fields = ('id', 'name', 'email', 'message', 'created_at', 'is_read')
         read_only_fields = ('id', 'created_at', 'is_read')
         extra_kwargs = {
             'name': {
+                'required': True,
                 'error_messages': {
                     'required': 'Name is required.',
                     'blank': 'Name cannot be blank.',
@@ -211,11 +223,15 @@ class ContactMessageSerializer(serializers.ModelSerializer):
                 }
             },
             'email': {
+                'required': True,
                 'error_messages': {
+                    'required': 'Email address is required.',
+                    'blank': 'Email address cannot be blank.',
                     'invalid': 'Please enter a valid email address.'
                 }
             },
             'message': {
+                'required': True,
                 'error_messages': {
                     'required': 'Message is required.',
                     'blank': 'Message cannot be blank.'
