@@ -188,7 +188,7 @@ class UserLoginView(APIView):
 
 
 class EmailVerificationView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         try:
@@ -266,7 +266,7 @@ class ResendVerificationEmailView(APIView):
 
 
 class RequestPhonenumberOTPView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         try:
@@ -306,7 +306,7 @@ class RequestPhonenumberOTPView(APIView):
 
 
 class VerifyPhoneNumberOTPView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         try:
