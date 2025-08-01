@@ -108,7 +108,7 @@ class MovieSearchView(APIView):
                 Q(title_fa__icontains=query) |
                 Q(overview__icontains=query) |
                 Q(overview_fa__icontains=query)
-            ).prefetch_related('genres').order_by('-release_date', '-imdb_rating')
+            ).order_by('-release_year', '-imdb_rating')
             
             # Apply pagination
             paginator = self.pagination_class()

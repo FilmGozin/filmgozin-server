@@ -56,7 +56,7 @@ class Movie(models.Model):
     tmdb_rating = models.FloatField(null=True, blank=True)
     runtime = models.IntegerField(null=True, blank=True)
     original_language = models.CharField(max_length=10, choices=LANGUAGE_CHOICES, default='en')
-    genre = models.CharField(max_length=20, choices=GENRE_CHOICES)
+    genre = models.CharField(max_length=20, choices=GENRE_CHOICES, default='drama')
     director = models.CharField(max_length=255, null=True, blank=True)
     cast = models.JSONField(null=True, blank=True)  # List of main cast members
     keywords = models.JSONField(null=True, blank=True)  # List of keywords/tags
