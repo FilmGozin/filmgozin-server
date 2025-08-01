@@ -23,7 +23,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 
 
 urlpatterns = [
-    # admin urls
+    # Admin urls
     path('admin/', admin.site.urls),
 
     # API urls
