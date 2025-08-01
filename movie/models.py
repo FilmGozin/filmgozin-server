@@ -3,27 +3,60 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class Genre(models.Model):
-    name = models.CharField(max_length=100)
-    name_fa = models.CharField(max_length=100, null=True, blank=True)  # Persian name
-    tmdb_id = models.IntegerField(unique=True, null=True, blank=True)
+# Language choices (ISO 639-1 codes)
+LANGUAGE_CHOICES = [
+    ('en', 'English'),
+    ('fa', 'Persian'),
+    ('fr', 'French'),
+    ('de', 'German'),
+    ('es', 'Spanish'),
+    ('it', 'Italian'),
+    ('ru', 'Russian'),
+    ('ja', 'Japanese'),
+    ('zh', 'Chinese'),
+    ('ar', 'Arabic'),
+    ('tr', 'Turkish'),
+    # ... add more as needed
+]
 
-    def __str__(self):
-        return self.name
+# Genre choices
+GENRE_CHOICES = [
+    ('action', 'Action'),
+    ('adventure', 'Adventure'),
+    ('animation', 'Animation'),
+    ('biography', 'Biography'),
+    ('comedy', 'Comedy'),
+    ('crime', 'Crime'),
+    ('documentary', 'Documentary'),
+    ('drama', 'Drama'),
+    ('family', 'Family'),
+    ('fantasy', 'Fantasy'),
+    ('history', 'History'),
+    ('horror', 'Horror'),
+    ('music', 'Music'),
+    ('mystery', 'Mystery'),
+    ('romance', 'Romance'),
+    ('sci-fi', 'Sci-Fi'),
+    ('sport', 'Sport'),
+    ('thriller', 'Thriller'),
+    ('war', 'War'),
+    ('western', 'Western'),
+    # ... add more as needed
+]
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
     title_fa = models.CharField(max_length=255, null=True, blank=True)  # Persian title
     overview = models.TextField(null=True, blank=True)
     overview_fa = models.TextField(null=True, blank=True)  # Persian overview
-    release_date = models.DateField(null=True, blank=True)
+    release_year = models.PositiveSmallIntegerField(null=True, blank=True)
     poster_path = models.URLField(null=True, blank=True)
     backdrop_path = models.URLField(null=True, blank=True)
     imdb_rating = models.FloatField(null=True, blank=True)
     tmdb_rating = models.FloatField(null=True, blank=True)
     runtime = models.IntegerField(null=True, blank=True)
-    original_language = models.CharField(max_length=10)
-    genres = models.ManyToManyField(Genre)
+    original_language = models.CharField(max_length=10, choices=LANGUAGE_CHOICES, default='en')
+    genre = models.CharField(max_length=20, choices=GENRE_CHOICES)
     director = models.CharField(max_length=255, null=True, blank=True)
     cast = models.JSONField(null=True, blank=True)  # List of main cast members
     keywords = models.JSONField(null=True, blank=True)  # List of keywords/tags

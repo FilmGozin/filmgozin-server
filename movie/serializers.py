@@ -1,24 +1,15 @@
 from rest_framework import serializers
-from .models import Movie, Genre, UserPreference, RecommendationQuestion, UserAnswer
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = ['id', 'name', 'name_fa', 'tmdb_id']
+from .models import Movie, UserPreference, RecommendationQuestion, UserAnswer
 
 class MovieBriefSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True, read_only=True)
-    
     class Meta:
         model = Movie
         fields = [
-            'id', 'title', 'title_fa', 'poster_path', 'release_date',
-            'imdb_rating', 'tmdb_rating', 'genres', 'is_tv_series'
+            'id', 'title', 'title_fa', 'poster_path', 'release_year',
+            'imdb_rating', 'tmdb_rating', 'genre', 'is_tv_series', 'original_language'
         ]
 
 class MovieSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True, read_only=True)
-    
     class Meta:
         model = Movie
         fields = '__all__'

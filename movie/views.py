@@ -10,9 +10,10 @@ from .models import Movie, UserPreference, RecommendationQuestion, UserAnswer
 from .serializers import (
     MovieSerializer, MovieBriefSerializer, UserPreferenceSerializer,
     RecommendationQuestionSerializer, UserAnswerSerializer,
-    MovieSimilarityRequestSerializer, GenreSerializer
+    MovieSimilarityRequestSerializer
 )
 from .recommendations import MovieRecommender
+from .models import GENRE_CHOICES
 
 
 class MovieDetailView(APIView):
@@ -61,14 +62,11 @@ class GenreListView(APIView):
 
     def get(self, request):
         try:
-            from .models import Genre
-            genres = Genre.objects.all().order_by('name')
-            
+            genres = [{'value': value, 'label': label} for value, label in GENRE_CHOICES]
             return Response({
-                "count": genres.count(),
-                "results": GenreSerializer(genres, many=True).data
+                "count": len(genres),
+                "results": genres
             })
-            
         except Exception as e:
             return Response({
                 "error": "Failed to retrieve genres",

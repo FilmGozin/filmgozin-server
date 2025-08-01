@@ -2,7 +2,7 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-from .models import Movie, Genre
+from .models import Movie
 import re
 from django.db.models import Q
 
@@ -16,7 +16,7 @@ class MovieRecommender:
     def _prepare_feature_matrix(self):
         try:
             # Get all movies
-            self.movies = list(Movie.objects.all().prefetch_related('genres'))
+            self.movies = list(Movie.objects.all())
             
             if not self.movies:
                 self.feature_matrix = None
@@ -30,8 +30,7 @@ class MovieRecommender:
                     movie.title_fa or '',
                     movie.overview or '',
                     movie.overview_fa or '',
-                    ' '.join([g.name for g in movie.genres.all() if g.name]),
-                    ' '.join([g.name_fa for g in movie.genres.all() if g.name_fa]),
+                    movie.genre or '',
                     movie.director or '',
                     ' '.join(movie.cast or []),
                     ' '.join(movie.keywords or [])
@@ -153,16 +152,15 @@ class MovieRecommender:
             score = 0
             
             # Genre score
-            if preferences['genres'] and movie.genres.exists():
-                movie_genres = set(g.name for g in movie.genres.all())
-                genre_match = len(set(preferences['genres']) & movie_genres) / len(preferences['genres'])
+            if preferences['genres'] and movie.genre:
+                genre_match = 1 if movie.genre in preferences['genres'] else 0
                 score += weights['genre'] * genre_match
             
             # Year score
-            if preferences['year_range'] and movie.release_date:
+            if preferences['year_range'] and movie.release_year:
                 try:
                     min_year, max_year = map(int, preferences['year_range'])
-                    if min_year <= movie.release_date.year <= max_year:
+                    if min_year <= movie.release_year <= max_year:
                         score += weights['year']
                 except (ValueError, TypeError):
                     pass

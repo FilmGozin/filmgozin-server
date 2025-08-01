@@ -1,23 +1,13 @@
 from django.contrib import admin
-from .models import Genre, Movie, UserPreference, RecommendationQuestion, UserAnswer
-
-
-@admin.register(Genre)
-class GenreAdmin(admin.ModelAdmin):
-    list_display = ('name', 'name_fa', 'tmdb_id')
-    list_filter = ('tmdb_id',)
-    search_fields = ('name', 'name_fa')
-    ordering = ('name',)
+from .models import Movie, UserPreference, RecommendationQuestion, UserAnswer
 
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ('title', 'title_fa', 'release_date', 'imdb_rating', 'tmdb_rating', 'is_tv_series', 'original_language')
-    list_filter = ('is_tv_series', 'original_language', 'release_date', 'genres')
+    list_display = ('title', 'title_fa', 'release_year', 'imdb_rating', 'tmdb_rating', 'is_tv_series', 'original_language', 'genre')
+    list_filter = ('is_tv_series', 'original_language', 'release_year', 'genre')
     search_fields = ('title', 'title_fa', 'overview', 'overview_fa', 'director')
     readonly_fields = ('created_at', 'updated_at')
-    filter_horizontal = ('genres',)
-    date_hierarchy = 'release_date'
     list_per_page = 25
 
 

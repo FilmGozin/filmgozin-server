@@ -42,16 +42,28 @@ SECRET_KEY ="django-insecure-q0^oja$hkvtqq73o822igwak6a79^!l($nka+fh)4mg!ra2^(-"
 # DEBUG = env.bool("DEBUG")
 DEBUG = True
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'root',
-        'PASSWORD': '1AeXaygMpcIrEknA8VV9Ab31',
-        'HOST': 'filmgozin-database',
-        'PORT': '5432',
+if DJANGO_ENV == "production":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'root',
+            'PASSWORD': '1AeXaygMpcIrEknA8VV9Ab31',
+            'HOST': 'filmgozin-database',
+            'PORT': '5432',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'filmgozin_local',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "filmgozin.com", "www.filmgozin.com", "filmgozin.liara.run", "filmgozin-client.liara.run"]
 
