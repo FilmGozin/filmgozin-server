@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 from .models import Profile
+from .models import ContactMessage
 from .sms import get_sms_provider
 from .serializers import (
     PhoneNumberSerializer,
@@ -186,6 +187,22 @@ class UserLoginView(APIView):
                 'details': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class UserListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        try:
+            users = User.objects.all()
+            serializer = UserSerializer(users, many=True)
+            return Response({'users': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve users',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 class EmailVerificationView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -507,6 +524,23 @@ class ContactMessageView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+class ContactMessagesListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ContactMessageSerializer
+
+    def get(self, request):
+        try:
+            messages = ContactMessage.objects.all()
+            serializer = ContactMessageSerializer(messages, many=True)
+            return Response({'contact_messages': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve contact messages',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
 class QuestionnaireView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -577,17 +611,3 @@ class QuestionnaireView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UserListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserSerializer
-
-    def get(self, request):
-        try:
-            users = User.objects.all()
-            serializer = UserSerializer(users, many=True)
-            return Response({'users': serializer.data}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({
-                'error': 'Failed to retrieve users',
-                'details': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

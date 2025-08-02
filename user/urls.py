@@ -5,6 +5,7 @@ from .views import (
     UserListView,
     ProfileView,
     ContactMessageView,
+    ContactMessagesListView,
     QuestionnaireView,
     UserSignupView,
     UserLoginView,
@@ -32,4 +33,5 @@ urlpatterns = [
 
     # Contact Us
     path('contact/', ContactMessageView.as_view(), name='contact'),
+    path('contact-messages/', ContactMessagesListView.as_view(), name='contact-messages-list'),
 ]
