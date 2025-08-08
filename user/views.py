@@ -189,7 +189,7 @@ class UserLoginView(APIView):
 
 
 class UserListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = UserSerializer
 
     def get(self, request):

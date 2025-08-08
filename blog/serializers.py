@@ -40,13 +40,14 @@ class PostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tag_names = validated_data.pop('tag_names', [])
-        post = Post.objects.create(**validated_data)
-        
-        for tag_name in tag_names:
-            tag, _ = Tag.objects.get_or_create(
-                name=tag_name,
-                defaults={'slug': None}  # Let the model generate the slug
-            )
-            post.tags.add(tag)
-        
-        return post 
+        try:
+            post = Post.objects.create(**validated_data)
+            for tag_name in tag_names:
+                tag, _ = Tag.objects.get_or_create(
+                    name=tag_name,
+                    defaults={'slug': None}
+                )
+                post.tags.add(tag)
+            return post
+        except Exception as e:
+            raise serializers.ValidationError({'error': 'Failed to create post', 'details': str(e)})

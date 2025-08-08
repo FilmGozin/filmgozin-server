@@ -1,7 +1,4 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 # Language choices (ISO 639-1 codes)
 LANGUAGE_CHOICES = [
@@ -69,7 +66,7 @@ class Movie(models.Model):
 
 
 class UserPreference(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     liked = models.BooleanField(default=False)
     watchlist = models.BooleanField(default=False)
@@ -94,7 +91,7 @@ class RecommendationQuestion(models.Model):
 
 
 class UserAnswer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE)
     question = models.ForeignKey(RecommendationQuestion, on_delete=models.CASCADE)
     answer_value = models.JSONField()  # Can store single value, list, or range
     created_at = models.DateTimeField(auto_now_add=True)

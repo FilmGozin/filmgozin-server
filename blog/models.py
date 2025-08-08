@@ -1,8 +1,5 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.utils.text import slugify
-
-User = get_user_model()
 
 
 class Tag(models.Model):
@@ -30,7 +27,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    author = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='posts')
     thumbnail = models.ImageField(upload_to='blog_thumbnails/')
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES)
     content = models.TextField()
