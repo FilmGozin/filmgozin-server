@@ -13,6 +13,7 @@ from .serializers import (
 )
 from .recommendations import MovieRecommender
 from .models import GENRE_CHOICES
+from rest_framework import permissions
 
 
 class MovieDetailView(APIView):
@@ -55,6 +56,22 @@ class MovieDetailView(APIView):
                 "details": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class MovieListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MovieSerializer
+
+    def get(self, request):
+        try:
+            users = Movie.objects.all()
+            serializer = MovieSerializer(users, many=True)
+            return Response({'movies': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve movies',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 class GenreListView(APIView):
     permission_classes = [AllowAny]
