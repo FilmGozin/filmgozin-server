@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
+from movie.models import Questionnaire, Question, Choice
 
 
 class CustomUserManager(BaseUserManager):
@@ -77,13 +78,19 @@ class User(AbstractUser):
             return 'Anonymous User'
 
 
+class AnsweredQuestionnaire(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answered_questionnaires')
+    questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
+    answers = models.JSONField(default=dict)  # {question_id: choice_id}
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    
 class Profile(models.Model):
     GENDER_CHOICES = [
         ('M', 'Male'),
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     first_name = models.CharField(max_length=100, blank=True)
@@ -95,7 +102,7 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, blank=True)
     interests = models.JSONField(default=list, blank=True)
     liked_movies = models.JSONField(default=list, blank=True)  # Store movie IDs
-    questionnaire_answers = models.JSONField(default=dict, blank=True)  # Store questionnaire answers
+    answered_questionnaires = models.ManyToManyField(AnsweredQuestionnaire, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

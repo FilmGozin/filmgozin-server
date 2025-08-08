@@ -524,9 +524,8 @@ class ContactMessageView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 class ContactMessagesListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = ContactMessageSerializer
 
     def get(self, request):

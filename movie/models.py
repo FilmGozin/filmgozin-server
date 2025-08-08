@@ -67,6 +67,7 @@ class Movie(models.Model):
     def __str__(self):
         return self.title
 
+
 class UserPreference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
@@ -79,6 +80,7 @@ class UserPreference(models.Model):
     class Meta:
         unique_together = ('user', 'movie')
 
+
 class RecommendationQuestion(models.Model):
     question_text = models.TextField()
     question_text_fa = models.TextField(null=True, blank=True)  # Persian question
@@ -90,6 +92,7 @@ class RecommendationQuestion(models.Model):
     def __str__(self):
         return self.question_text
 
+
 class UserAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(RecommendationQuestion, on_delete=models.CASCADE)
@@ -98,3 +101,18 @@ class UserAnswer(models.Model):
 
     class Meta:
         unique_together = ('user', 'question')
+
+
+class Questionnaire(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
+
+class Question(models.Model):
+    questionnaire = models.ForeignKey(Questionnaire, related_name='questions', on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)

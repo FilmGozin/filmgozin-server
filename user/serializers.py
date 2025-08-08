@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
-from .models import Profile, ContactMessage
+from .models import Profile, ContactMessage, AnsweredQuestionnaire
+from movie.models import Questionnaire
 from phonenumber_field.serializerfields import PhoneNumberField
 
 User = get_user_model()
@@ -163,6 +164,13 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('is_phone_verified', 'is_email_verified',)
 
 
+class AnsweredQuestionnaireSerializer(serializers.ModelSerializer):
+    questionnaire_title = serializers.CharField(source='questionnaire.title', read_only=True)
+    class Meta:
+        model = AnsweredQuestionnaire
+        fields = ('id', 'questionnaire', 'questionnaire_title', 'answers', 'answered_at')
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
     email = serializers.EmailField(
@@ -188,14 +196,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
     )
     liked_movies = serializers.JSONField(required=False)
-    questionnaire_answers = serializers.JSONField(required=False)
+    answered_questionnaires = AnsweredQuestionnaireSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('id', 'phone_number', 'email', 'avatar', 'first_name', 'last_name',
-                 'bio', 'birth_date', 'gender', 'city', 'interests', 'liked_movies',
-                 'questionnaire_answers', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'phone_number', 'created_at', 'updated_at')
+        fields = (
+            'id', 'phone_number', 'email', 'avatar', 'first_name', 'last_name',
+            'bio', 'birth_date', 'gender', 'city', 'interests', 'liked_movies',
+            'questionnaire_answers', 'answered_questionnaires', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'phone_number', 'created_at', 'updated_at', 'answered_questionnaires')
 
     def get_phone_number(self, obj):
         return str(obj.user.phone_number)
