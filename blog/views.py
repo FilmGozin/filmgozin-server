@@ -6,13 +6,12 @@ from .serializers import PostSerializer, TagSerializer
 from django.utils.text import slugify
 
 
-class PostListView(generics.ListCreateAPIView):
+class PostCreationView(generics.ListCreateAPIView):
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        # Generate a unique slug
         title = serializer.validated_data['title']
         base_slug = slugify(title)
         slug = base_slug
@@ -45,6 +44,21 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
         instance.delete()
+
+
+class PostByTypeView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        queryset = Post.objects.filter(is_published=True)
+        types_param = self.request.query_params.get('types')
+
+        if types_param:
+            types_list = [t.strip() for t in types_param.split(',') if t.strip()]
+            queryset = queryset.filter(post_type__in=types_list)
+
+        return queryset
 
 
 class TagListView(generics.ListCreateAPIView):
