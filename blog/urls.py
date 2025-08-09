@@ -1,8 +1,7 @@
 from django.urls import path
 from .views import (
-    PostCreationView,
+    PostListCreateByTypeView,
     PostDetailView,
-    PostByTypeView,
     TagListView,
     UserPostsView,
 )
@@ -10,9 +9,8 @@ from .views import (
 app_name = 'blog'
 
 urlpatterns = [
-    path('posts/', PostCreationView.as_view(), name='create-post'),
+    path('posts/', PostListCreateByTypeView.as_view(), name='post-list-create-by-type'),
     path('posts/<slug:slug>/', PostDetailView.as_view(), name='post-detail'),
-    path('posts/type/<str:post_type>/', PostByTypeView.as_view(), name='post-list'),
     path('tags/', TagListView.as_view(), name='tag-list'),
     path('my-posts/', UserPostsView.as_view(), name='user-posts'),
 ] 

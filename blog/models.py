@@ -16,20 +16,24 @@ class Tag(models.Model):
 
 
 class Post(models.Model):
-    POST_TYPE_CHOICES = [
-        ('movie', 'Movie'),
-        ('series', 'Series'),
-        ('interview', 'Interview'),
-        ('news', 'Hollywood News'),
-        ('production', 'Film Production'),
-        ('criticism', 'Criticism'),
-    ]
+    class PostType(models.TextChoices):
+        MOVIE = 'movie', 'Movie'
+        SERIES = 'series', 'Series'
+        INTERVIEW = 'interview', 'Interview'
+        NEWS = 'news', 'Hollywood News'
+        PRODUCTION = 'production', 'Film Production'
+        CRITICISM = 'criticism', 'Criticism'
+        DOCUMENTARY = 'documentary', 'Documentary'
 
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     author = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='posts')
     thumbnail = models.ImageField(upload_to='blog_thumbnails/')
-    post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES)
+    post_type = models.CharField(
+        max_length=20,
+        choices=PostType.choices,
+        default=PostType.MOVIE
+    )
     content = models.TextField()
     release_date = models.DateField()
     tags = models.ManyToManyField(Tag, related_name='posts')

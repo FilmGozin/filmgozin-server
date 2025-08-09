@@ -6,10 +6,17 @@ from .serializers import PostSerializer, TagSerializer
 from django.utils.text import slugify
 
 
-class PostCreationView(generics.ListCreateAPIView):
-    queryset = Post.objects.filter(is_published=True)
+class PostListCreateByTypeView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Post.objects.filter(is_published=True)
+        types_param = self.request.query_params.get('types')
+        if types_param:
+            types_list = [t.strip() for t in types_param.split(',') if t.strip()]
+            queryset = queryset.filter(post_type__in=types_list)
+        return queryset
 
     def perform_create(self, serializer):
         title = serializer.validated_data['title']
@@ -19,7 +26,6 @@ class PostCreationView(generics.ListCreateAPIView):
         while Post.objects.filter(slug=slug).exists():
             slug = f"{base_slug}-{counter}"
             counter += 1
-        
         serializer.save(author=self.request.user, slug=slug)
 
 
@@ -44,21 +50,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
         instance.delete()
-
-
-class PostByTypeView(generics.ListAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-    def get_queryset(self):
-        queryset = Post.objects.filter(is_published=True)
-        types_param = self.request.query_params.get('types')
-
-        if types_param:
-            types_list = [t.strip() for t in types_param.split(',') if t.strip()]
-            queryset = queryset.filter(post_type__in=types_list)
-
-        return queryset
 
 
 class TagListView(generics.ListCreateAPIView):
