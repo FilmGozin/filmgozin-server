@@ -95,6 +95,7 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, blank=True)
     interests = models.JSONField(default=list, blank=True)
     liked_movies = models.JSONField(default=list, blank=True)  # Store movie IDs
+    suggested_movies = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

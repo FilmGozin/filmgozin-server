@@ -86,7 +86,8 @@ class UserSignupView(APIView):
                 try:
                     user = serializer.save()
                     
-                    # # Create profile for the user
+                    # Create profile for the user
+                    Profile.objects.get_or_create(user=user)
                     # try:
                     #     Profile.objects.get_or_create(user=user)
                     # except Exception as e:
