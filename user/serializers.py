@@ -76,6 +76,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return attrs
     
     def validate_email(self, value):
+        email = value.strip().lower()
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 "A user with this email address already exists. Please use a different email or try logging in."
@@ -93,7 +94,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
         validated_data.pop('password_repeat')
         user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
+            email=validated_data['email'].strip().lower(),
             password=validated_data['password']
         )
         return user
@@ -115,7 +116,7 @@ class UserLoginSerializer(serializers.Serializer):
     )
     
     def validate(self, attrs):
-        email = attrs.get('email')
+        email = attrs.get('email', '').strip().lower()
         password = attrs.get('password')
         
         if email and password:

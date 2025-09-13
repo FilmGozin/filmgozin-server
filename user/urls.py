@@ -10,7 +10,7 @@ from .views import (
     UserSignupView,
     UserLoginView,
     EmailVerificationView,
-    ResendVerificationEmailView,
+    RequestVerificationEmailView,
 )
 
 app_name = 'user'
@@ -21,8 +21,8 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='login'),
 
     # Verification
+    path('request-verification/', RequestVerificationEmailView.as_view(), name='request-verification'),
     path('verify-email/', EmailVerificationView.as_view(), name='verify-email'),
-    path('resend-verification/', ResendVerificationEmailView.as_view(), name='resend-verification'),
     path('request-phonenumber-otp/', RequestPhonenumberOTPView.as_view(), name='request-phonenumber-otp'),
     path('verify-phonenumber/', VerifyPhoneNumberOTPView.as_view(), name='verify-phonenumber'),
 

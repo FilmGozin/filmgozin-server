@@ -65,7 +65,16 @@ else:
         }
     }
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "filmgozin.com", "www.filmgozin.com", "filmgozin.liara.run", "filmgozin-client.liara.run"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "filmgozin.com",
+    "www.filmgozin.com",
+    # API server on Liara
+    "filmgozin-server.liara.run",
+    # Frontend on Liara (for CORS/CSRF referer checks)
+    "filmgozin-client.liara.run",
+]
 
 # Application definition
 
@@ -206,12 +215,12 @@ AUTH_USER_MODEL = 'user.User'
 
 # Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # You can change this to your preferred email provider
+EMAIL_HOST = 'smtp.c1.liara.email'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'your-app-password'  # Replace with your app password
-DEFAULT_FROM_EMAIL = 'noreply@filmgozin.com'
+EMAIL_HOST_USER = ''  
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = ''
 
 # Frontend URL for email verification links
-FRONTEND_URL = 'https://filmgozin-client.liara.run'  # Replace with your frontend URL
+FRONTEND_URL = 'https://filmgozin.com'

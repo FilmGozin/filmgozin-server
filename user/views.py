@@ -96,17 +96,17 @@ class UserSignupView(APIView):
                         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                     
                     # Send verification email
-                    if send_verification_email(user):
-                        return Response({
-                            'message': 'User registered successfully. Please check your email to verify your account.',
-                            'user': UserSerializer(user).data
-                        }, status=status.HTTP_201_CREATED)
-                    else:
-                        return Response({
-                            'message': 'User registered successfully but failed to send verification email. Please contact support.',
-                            'user': UserSerializer(user).data,
-                            'warning': 'Email verification not sent'
-                        }, status=status.HTTP_201_CREATED)
+                    # if send_verification_email(user):
+                    #     return Response({
+                    #         'message': 'User registered successfully. Please check your email to verify your account.',
+                    #         'user': UserSerializer(user).data
+                    #     }, status=status.HTTP_201_CREATED)
+                    # else:
+                    #     return Response({
+                    #         'message': 'User registered successfully but failed to send verification email. Please contact support.',
+                    #         'user': UserSerializer(user).data,
+                    #         'warning': 'Email verification not sent'
+                    #     }, status=status.HTTP_201_CREATED)
                         
                 except IntegrityError as e:
                     # Handle specific integrity constraint violations
@@ -252,7 +252,7 @@ class EmailVerificationView(APIView):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class ResendVerificationEmailView(APIView):
+class RequestVerificationEmailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
@@ -525,7 +525,7 @@ class ContactMessageView(APIView):
 
 
 class ContactMessagesListView(generics.ListAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = ContactMessageSerializer
 
     def get(self, request):

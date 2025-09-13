@@ -23,17 +23,12 @@ class Command(BaseCommand):
                     'tmdb_rating': row['tmdb_rating'],
                     'runtime': row['runtime'],
                     'original_language': row['original_language'],
+                    'genre': row['genres'].split(',')[0].strip().lower() if row['genres'] else 'drama',
                     'director': row['director'],
                     'cast': eval(row['cast']),
                     'keywords': eval(row['keywords']),
                     'is_tv_series': row['is_tv_series'],
                 }
             )
-
-            # اضافه کردن ژانرها
-            genre_names = row['genres'].split(',')
-            for g in genre_names:
-                genre, _ = Genre.objects.get_or_create(name=g.strip())
-                movie.genres.add(genre)
 
         self.stdout.write(self.style.SUCCESS('Movies imported successfully'))

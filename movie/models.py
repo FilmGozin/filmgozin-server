@@ -1,6 +1,5 @@
 from django.db import models
 
-# Language choices (ISO 639-1 codes)
 LANGUAGE_CHOICES = [
     ('en', 'English'),
     ('fa', 'Persian'),
@@ -13,10 +12,8 @@ LANGUAGE_CHOICES = [
     ('zh', 'Chinese'),
     ('ar', 'Arabic'),
     ('tr', 'Turkish'),
-    # ... add more as needed
 ]
 
-# Genre choices
 GENRE_CHOICES = [
     ('action', 'Action'),
     ('adventure', 'Adventure'),
@@ -38,14 +35,13 @@ GENRE_CHOICES = [
     ('thriller', 'Thriller'),
     ('war', 'War'),
     ('western', 'Western'),
-    # ... add more as needed
 ]
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
-    title_fa = models.CharField(max_length=255, null=True, blank=True)  # Persian title
+    title_fa = models.CharField(max_length=255, null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
-    overview_fa = models.TextField(null=True, blank=True)  # Persian overview
+    overview_fa = models.TextField(null=True, blank=True)
     release_year = models.PositiveSmallIntegerField(null=True, blank=True)
     poster_path = models.URLField(null=True, blank=True)
     backdrop_path = models.URLField(null=True, blank=True)
@@ -55,8 +51,8 @@ class Movie(models.Model):
     original_language = models.CharField(max_length=10, choices=LANGUAGE_CHOICES, default='en')
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, default='drama')
     director = models.CharField(max_length=255, null=True, blank=True)
-    cast = models.JSONField(null=True, blank=True)  # List of main cast members
-    keywords = models.JSONField(null=True, blank=True)  # List of keywords/tags
+    cast = models.JSONField(null=True, blank=True)
+    keywords = models.JSONField(null=True, blank=True)
     is_tv_series = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
