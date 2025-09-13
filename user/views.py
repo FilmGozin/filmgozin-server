@@ -455,8 +455,6 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         try:
-            print("WWWWWWWWWWWWWWWWWWWWW")
-            print(self.request.user.profile)
             return self.request.user.profile
         except Profile.DoesNotExist:
             raise ValidationError("User profile not found")

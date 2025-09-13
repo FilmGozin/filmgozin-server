@@ -165,7 +165,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('is_phone_verified', 'is_email_verified',)
 
 class ProfileSerializer(serializers.ModelSerializer):
-    phone_number = serializers.SerializerMethodField()
+    phone_number = PhoneNumberField(source='user.phone_number', required=False)
     email = serializers.EmailField(
         source='user.email', 
         required=False, 
@@ -197,7 +197,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'bio', 'birth_date', 'gender', 'city', 'interests', 'liked_movies',
             'suggested_movies', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'phone_number', 'created_at', 'updated_at', 'suggested_movies')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'suggested_movies')
 
     def get_phone_number(self, obj):
         return str(obj.user.phone_number)
