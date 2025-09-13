@@ -20,7 +20,7 @@ class Command(BaseCommand):
                     'title_fa': row['title_fa'],
                     'overview': row['overview'],
                     'overview_fa': row['overview_fa'],
-                    'release_date': parse_date(str(row['release_date'])),
+                    'release_year': parse_date(str(row['release_date'])),
                     'poster_path': row['poster_path'],
                     'backdrop_path': row['backdrop_path'],
                     'imdb_rating': row['imdb_rating'],
