@@ -1,18 +1,18 @@
 # FilmGozin Server
 
-A Django REST API server for the FilmGozin application.
+A Django REST API server for the movie recommendation system.
 
 ## Features
 
-- User authentication (signup, login, email verification)
-- Phone number verification via SMS
-- Movie recommendations
+- User authentication: Signup, Login
+- User profiles: User Preferences, Email verification, Phone number verification via SMS
+- Movie recommendations based on: similar movie name or questionnare
 - Blog system
-- User profiles and questionnaires
 
 ## Authentication Endpoints
 
 ### User Signup
+
 - **URL**: `/api/user/signup/`
 - **Method**: `POST`
 - **Fields**:
@@ -20,9 +20,10 @@ A Django REST API server for the FilmGozin application.
   - `email` (required): Valid email address
   - `password` (required): Strong password
   - `password_repeat` (required): Must match password
-- **Response**: User data and verification email sent
+- **Response**: User data sent
 
 ### User Login
+
 - **URL**: `/api/user/login/`
 - **Method**: `POST`
 - **Fields**:
@@ -31,6 +32,7 @@ A Django REST API server for the FilmGozin application.
 - **Response**: User data and authentication token
 
 ### Email Verification
+
 - **URL**: `/api/user/verify-email/`
 - **Method**: `POST`
 - **Fields**:
@@ -38,7 +40,8 @@ A Django REST API server for the FilmGozin application.
 - **Response**: Confirmation message
 
 ### Resend Verification Email
-- **URL**: `/api/user/resend-verification/`
+
+- **URL**: `/api/user/request-verification/`
 - **Method**: `POST`
 - **Authentication**: Required
 - **Response**: Confirmation message
@@ -46,22 +49,25 @@ A Django REST API server for the FilmGozin application.
 ## Existing Endpoints
 
 ### Phone Verification
+
 - **Request OTP**: `/api/user/request-phonenumber-otp/`
 - **Verify OTP**: `/api/user/verify-phonenumber/`
 
 ### User Profile
+
 - **Profile**: `/api/user/profile/`
 - **Contact**: `/api/user/contact/`
-- **Questionnaire**: `/api/user/questionnaire/`
 
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 2. Configure email settings in `filmgozin_server/settings.py`:
+
    ```python
    EMAIL_HOST_USER = 'your-email@gmail.com'
    EMAIL_HOST_PASSWORD = 'your-app-password'
@@ -69,6 +75,7 @@ A Django REST API server for the FilmGozin application.
    ```
 
 3. Run migrations:
+
    ```bash
    python manage.py migrate
    ```
@@ -94,6 +101,7 @@ python manage.py test user.tests.AuthenticationAPITest --settings=test_settings
 ```
 
 The test suite includes comprehensive tests for:
+
 - User model functionality
 - Authentication API endpoints
 - Email verification process
@@ -112,4 +120,4 @@ The application uses Django's email backend to send verification emails. Configu
 - Passwords are validated using Django's built-in password validators
 - Email verification tokens expire after 24 hours
 - Authentication uses Django REST Framework's TokenAuthentication
-- All sensitive endpoints require authentication except signup, login, and verification
+- All sensitive endpoints require authentication except signup, login

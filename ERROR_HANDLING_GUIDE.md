@@ -1,32 +1,13 @@
 # Error Handling Guide - FilmGozin API
 
-## Overview
-
-The FilmGozin API has been updated with comprehensive error handling to provide specific, user-friendly error messages instead of generic 500 errors. All endpoints now return structured error responses with clear error types and detailed explanations.
-
-## Recent Fixes (Latest Update)
-
-### Database Error Fixes
-
-**Fixed Issues:**
-1. **Phone Number Verification Database Errors**: Resolved constraint violations when creating users with phone numbers
-2. **Signup Database Errors**: Fixed table existence and constraint issues during user registration
-3. **User Model Improvements**: Enhanced User model to handle email/phone number requirements properly
-
-**Key Improvements:**
-- Better handling of phone-only users with placeholder emails
-- Improved unique constraint handling for usernames and emails
-- Enhanced error messages for specific database constraint violations
-- Proper migration handling for database schema changes
-
 ## Error Response Format
 
 All error responses now follow this consistent format:
 
 ```json
 {
-    "error": "Human-readable error title",
-    "details": "Detailed explanation or validation errors"
+  "error": "Human-readable error title",
+  "details": "Detailed explanation or validation errors"
 }
 ```
 
@@ -47,122 +28,140 @@ The API uses appropriate HTTP status codes:
 ### 1. User Signup (`POST /api/user/signup/`)
 
 **Validation Errors (400 Bad Request):**
+
 ```json
 {
-    "error": "Validation failed",
-    "details": {
-        "username": ["Username is required."],
-        "email": ["Please enter a valid email address."],
-        "password": ["This password is too short."],
-        "password_repeat": ["Passwords don't match. Please make sure both passwords are identical."]
-    }
+  "error": "Validation failed",
+  "details": {
+    "username": ["Username is required."],
+    "email": ["Please enter a valid email address."],
+    "password": ["This password is too short."],
+    "password_repeat": [
+      "Passwords don't match. Please make sure both passwords are identical."
+    ]
+  }
 }
 ```
 
 **Duplicate User Errors (400 Bad Request):**
+
 ```json
 {
-    "error": "Username already exists",
-    "details": "This username is already taken. Please choose a different username."
+  "error": "Username already exists",
+  "details": "This username is already taken. Please choose a different username."
 }
 ```
 
 ```json
 {
-    "error": "Email already exists",
-    "details": "A user with this email address already exists. Please use a different email or try logging in."
+  "error": "Email already exists",
+  "details": "A user with this email address already exists. Please use a different email or try logging in."
 }
 ```
 
 **Database Constraint Errors (400 Bad Request):**
+
 ```json
 {
-    "error": "Database integrity error",
-    "details": "User creation failed due to database constraints. Please check your input data."
+  "error": "Database integrity error",
+  "details": "User creation failed due to database constraints. Please check your input data."
 }
 ```
 
 **Database Errors (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Database error",
-    "details": "Failed to create user due to database issues. Please try again later."
+  "error": "Database error",
+  "details": "Failed to create user due to database issues. Please try again later."
 }
 ```
 
 **Profile Creation Errors (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Failed to create user profile",
-    "details": "Specific error message"
+  "error": "Failed to create user profile",
+  "details": "Specific error message"
 }
 ```
 
 ### 2. User Login (`POST /api/user/login/`)
 
 **Invalid Credentials (400 Bad Request):**
+
 ```json
 {
-    "error": "Login failed",
-    "details": {
-        "non_field_errors": ["Invalid email address or password. Please check your credentials and try again."]
-    }
+  "error": "Login failed",
+  "details": {
+    "non_field_errors": [
+      "Invalid email address or password. Please check your credentials and try again."
+    ]
+  }
 }
 ```
 
 **Disabled Account (400 Bad Request):**
+
 ```json
 {
-    "error": "Login failed",
-    "details": {
-        "non_field_errors": ["Your account has been disabled. Please contact support for assistance."]
-    }
+  "error": "Login failed",
+  "details": {
+    "non_field_errors": [
+      "Your account has been disabled. Please contact support for assistance."
+    ]
+  }
 }
 ```
 
 **Authentication Token Errors (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Authentication failed",
-    "details": "Failed to create authentication token"
+  "error": "Authentication failed",
+  "details": "Failed to create authentication token"
 }
 ```
 
 ### 3. Email Verification (`POST /api/user/verify-email/`)
 
 **Invalid Token (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid or expired verification token",
-    "details": "The verification token is not valid or has expired"
+  "error": "Invalid or expired verification token",
+  "details": "The verification token is not valid or has expired"
 }
 ```
 
 **Invalid Token Format (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid token format",
-    "details": {
-        "token": ["Verification token is required."]
-    }
+  "error": "Invalid token format",
+  "details": {
+    "token": ["Verification token is required."]
+  }
 }
 ```
 
 ### 4. Resend Verification Email (`POST /api/user/resend-verification/`)
 
 **Already Verified (400 Bad Request):**
+
 ```json
 {
-    "error": "Email is already verified",
-    "details": "No verification email needed"
+  "error": "Email is already verified",
+  "details": "No verification email needed"
 }
 ```
 
 **Email Service Unavailable (503 Service Unavailable):**
+
 ```json
 {
-    "error": "Failed to send verification email",
-    "details": "Email service is currently unavailable. Please try again later."
+  "error": "Failed to send verification email",
+  "details": "Email service is currently unavailable. Please try again later."
 }
 ```
 
@@ -171,70 +170,78 @@ The API uses appropriate HTTP status codes:
 ### 5. Request Phone OTP (`POST /api/user/request-phonenumber-otp/`)
 
 **Invalid Phone Number (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid phone number",
-    "details": {
-        "phone_number": ["Please enter a valid phone number."]
-    }
+  "error": "Invalid phone number",
+  "details": {
+    "phone_number": ["Please enter a valid phone number."]
+  }
 }
 ```
 
 **Cache Service Unavailable (503 Service Unavailable):**
+
 ```json
 {
-    "error": "Cache service unavailable",
-    "details": "Failed to store OTP code"
+  "error": "Cache service unavailable",
+  "details": "Failed to store OTP code"
 }
 ```
 
 **SMS Service Unavailable (503 Service Unavailable):**
+
 ```json
 {
-    "error": "Failed to send OTP",
-    "details": "SMS service is currently unavailable. Please try again later."
+  "error": "Failed to send OTP",
+  "details": "SMS service is currently unavailable. Please try again later."
 }
 ```
 
 ### 6. Verify Phone Number (`POST /api/user/verify-phonenumber/`)
 
 **Invalid OTP (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid OTP",
-    "details": "The provided OTP code is incorrect"
+  "error": "Invalid OTP",
+  "details": "The provided OTP code is incorrect"
 }
 ```
 
 **Expired OTP (400 Bad Request):**
+
 ```json
 {
-    "error": "OTP expired or invalid",
-    "details": "The OTP code has expired or was never sent"
+  "error": "OTP expired or invalid",
+  "details": "The OTP code has expired or was never sent"
 }
 ```
 
 **Phone Number Already Exists (400 Bad Request):**
+
 ```json
 {
-    "error": "Phone number already exists",
-    "details": "This phone number is already registered with another account"
+  "error": "Phone number already exists",
+  "details": "This phone number is already registered with another account"
 }
 ```
 
 **Username Conflict (400 Bad Request):**
+
 ```json
 {
-    "error": "Username conflict",
-    "details": "Unable to create unique username for this phone number"
+  "error": "Username conflict",
+  "details": "Unable to create unique username for this phone number"
 }
 ```
 
 **Database Errors (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Database error",
-    "details": "Failed to process verification due to database issues"
+  "error": "Database error",
+  "details": "Failed to process verification due to database issues"
 }
 ```
 
@@ -243,29 +250,32 @@ The API uses appropriate HTTP status codes:
 ### Profile Update (`PUT/PATCH /api/user/profile/`)
 
 **Profile Not Found (404 Not Found):**
+
 ```json
 {
-    "error": "Profile not found",
-    "details": "User profile not found"
+  "error": "Profile not found",
+  "details": "User profile not found"
 }
 ```
 
 **Validation Errors (400 Bad Request):**
+
 ```json
 {
-    "error": "Validation failed",
-    "details": {
-        "email": ["Please enter a valid email address."],
-        "first_name": ["First name cannot exceed 100 characters."]
-    }
+  "error": "Validation failed",
+  "details": {
+    "email": ["Please enter a valid email address."],
+    "first_name": ["First name cannot exceed 100 characters."]
+  }
 }
 ```
 
 **Update Failed (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Profile update failed",
-    "details": "Specific error message"
+  "error": "Profile update failed",
+  "details": "Specific error message"
 }
 ```
 
@@ -274,22 +284,24 @@ The API uses appropriate HTTP status codes:
 ### Contact Message (`POST /api/user/contact/`)
 
 **Validation Errors (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid contact message data",
-    "details": {
-        "name": ["Name is required."],
-        "email": ["Please enter a valid email address."],
-        "message": ["Message is required."]
-    }
+  "error": "Invalid contact message data",
+  "details": {
+    "name": ["Name is required."],
+    "email": ["Please enter a valid email address."],
+    "message": ["Message is required."]
+  }
 }
 ```
 
 **Save Failed (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Failed to save contact message",
-    "details": "Specific error message"
+  "error": "Failed to save contact message",
+  "details": "Specific error message"
 }
 ```
 
@@ -298,26 +310,29 @@ The API uses appropriate HTTP status codes:
 ### Questionnaire Operations (`GET/POST/DELETE /api/user/questionnaire/`)
 
 **Profile Not Found (404 Not Found):**
+
 ```json
 {
-    "error": "Profile not found",
-    "details": "User profile does not exist"
+  "error": "Profile not found",
+  "details": "User profile does not exist"
 }
 ```
 
 **Invalid Answers Format (400 Bad Request):**
+
 ```json
 {
-    "error": "Invalid answers format",
-    "details": "Answers must be a JSON object"
+  "error": "Invalid answers format",
+  "details": "Answers must be a JSON object"
 }
 ```
 
 **Operation Failed (500 Internal Server Error):**
+
 ```json
 {
-    "error": "Failed to save questionnaire",
-    "details": "Specific error message"
+  "error": "Failed to save questionnaire",
+  "details": "Specific error message"
 }
 ```
 
@@ -365,6 +380,7 @@ The error handling system is thoroughly tested with 22 test cases covering:
 - Questionnaire operations
 
 Run tests with:
+
 ```bash
 python manage.py test user.tests --settings=test_settings
 ```
@@ -372,6 +388,7 @@ python manage.py test user.tests --settings=test_settings
 ### Database Error Fix Verification
 
 To verify that the database errors are fixed, run:
+
 ```bash
 python3 test_fixes.py
 ```
@@ -402,12 +419,14 @@ If you're updating from the previous version:
 ## Database Schema Requirements
 
 **Important**: Ensure all migrations are applied before testing:
+
 ```bash
 python manage.py migrate --settings=test_settings
 ```
 
 The User model now properly handles:
+
 - Phone-only users with placeholder emails
 - Unique constraints for username, email, and phone number
 - Proper validation for required fields
-- Better error handling for database constraints 
+- Better error handling for database constraints

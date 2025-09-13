@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
-from .models import Profile, ContactMessage, AnsweredQuestionnaire
+from .models import Profile, ContactMessage
 from movie.models import Questionnaire
 from phonenumber_field.serializerfields import PhoneNumberField
 
@@ -164,14 +164,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'phone_number', 'email', 'is_phone_verified', 'is_email_verified')
         read_only_fields = ('is_phone_verified', 'is_email_verified',)
 
-
-class AnsweredQuestionnaireSerializer(serializers.ModelSerializer):
-    questionnaire_title = serializers.CharField(source='questionnaire.title', read_only=True)
-    class Meta:
-        model = AnsweredQuestionnaire
-        fields = ('id', 'questionnaire', 'questionnaire_title', 'answers', 'answered_at')
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
     email = serializers.EmailField(
@@ -197,7 +189,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
     )
     liked_movies = serializers.JSONField(required=False)
-    answered_questionnaires = AnsweredQuestionnaireSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile

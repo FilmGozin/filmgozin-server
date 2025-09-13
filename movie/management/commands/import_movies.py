@@ -6,8 +6,12 @@ from django.utils.dateparse import parse_date
 class Command(BaseCommand):
     help = 'Import movies into database from CSV'
 
+    def add_arguments(self, parser):
+        parser.add_argument('csv_path', type=str, help='Path to the CSV file to import')
+
     def handle(self, *args, **options):
-        df = pd.read_csv('movies_dataset.csv')
+        csv_path = options['csv_path']
+        df = pd.read_csv(csv_path)
 
         for _, row in df.iterrows():
             movie, created = Movie.objects.get_or_create(
