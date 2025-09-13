@@ -460,36 +460,47 @@ class ProfileView(generics.RetrieveUpdateAPIView):
             raise ValidationError("User profile not found")
 
     def update(self, request, *args, **kwargs):
-        try:
-            partial = kwargs.pop('partial', False)
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=partial)
-            
-            if serializer.is_valid():
-                try:
-                    self.perform_update(serializer)
-                    return Response(serializer.data)
-                except Exception as e:
-                    return Response({
-                        'error': 'Profile update failed',
-                        'details': str(e)
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            else:
-                return Response({
-                    'error': 'Validation failed',
-                    'details': serializer.errors
-                }, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                partial = kwargs.pop('partial', False)
+                instance = self.get_object()
                 
-        except ValidationError as e:
-            return Response({
-                'error': 'Profile not found',
-                'details': str(e)
-            }, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({
-                'error': 'Unexpected error occurred',
-                'details': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                data = request.data.copy()
+                
+                phone_number = data.pop('phone_number', None)
+                
+                serializer = self.get_serializer(instance, data=data, partial=partial)
+                
+                if serializer.is_valid():
+                    try:
+                        self.perform_update(serializer)
+                        
+                        if phone_number:
+                            instance.user.phone_number = phone_number
+                            instance.user.save()
+                        
+                        return Response(serializer.data)
+                    except Exception as e:
+                        return Response({
+                            'error': 'Profile update failed',
+                            'details': str(e)
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                else:
+                    return Response({
+                        'error': 'Validation failed',
+                        'details': serializer.errors
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                    
+            except ValidationError as e:
+                return Response({
+                    'error': 'Profile not found',
+                    'details': str(e)
+                }, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                return Response({
+                    'error': 'Unexpected error occurred',
+                    'details': str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     def perform_update(self, serializer):
         try:
