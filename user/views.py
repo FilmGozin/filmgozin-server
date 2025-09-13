@@ -86,15 +86,19 @@ class UserSignupView(APIView):
                 try:
                     user = serializer.save()
                     
-                    # Create profile for the user
-                    try:
-                        Profile.objects.get_or_create(user=user)
-                    except Exception as e:
-                        return Response({
-                            'error': 'Failed to create user profile',
-                            'details': str(e)
-                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    # # Create profile for the user
+                    # try:
+                    #     Profile.objects.get_or_create(user=user)
+                    # except Exception as e:
+                    #     return Response({
+                    #         'error': 'Failed to create user profile',
+                    #         'details': str(e)
+                    #     }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                     
+                    return Response({
+                        'message': 'User registered successfully',
+                        'user': UserSerializer(user).data
+                    }, status=status.HTTP_201_CREATED)
                     # Send verification email
                     # if send_verification_email(user):
                     #     return Response({
@@ -450,6 +454,8 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         try:
+            print("WWWWWWWWWWWWWWWWWWWWW")
+            print(self.request.user.profile)
             return self.request.user.profile
         except Profile.DoesNotExist:
             raise ValidationError("User profile not found")
