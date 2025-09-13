@@ -22,14 +22,14 @@ urlpatterns = [
     path('movies/<int:movie_id>/', MovieDetailView.as_view(), name='movie-detail'),
     path('genres/', GenreListView.as_view(), name='genre-list'),
     
-    # Search and recommendations
+    # Search through dataset
     path('search/', MovieSearchView.as_view(), name='search'),
-    path('similar/', SimilarMoviesView.as_view(), name='similar-movies'),
     
     # Recommendation questions and answers
     path('questions/', RecommendationQuestionsView.as_view(), name='recommendation-questions'),
     path('answers/', UserAnswersView.as_view(), name='user-answers'),
     path('recommendations/', GetRecommendationsView.as_view(), name='recommendations'),
+    path('similar/', SimilarMoviesView.as_view(), name='similar-movies'),
     
     # User preferences
     path('preferences/', UserPreferenceView.as_view(), name='user-preferences'),

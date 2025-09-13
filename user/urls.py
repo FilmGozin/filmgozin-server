@@ -6,7 +6,6 @@ from .views import (
     ProfileView,
     ContactMessageView,
     ContactMessagesListView,
-    QuestionnaireView,
     UserSignupView,
     UserLoginView,
     EmailVerificationView,
@@ -29,7 +28,6 @@ urlpatterns = [
     # User Profile
     path('users/', UserListView.as_view(), name='user-list'),
     path('profile/', ProfileView.as_view(), name='profile'),
-    path('questionnaire/', QuestionnaireView.as_view(), name='questionnaire'),
 
     # Contact Us
     path('contact/', ContactMessageView.as_view(), name='contact'),

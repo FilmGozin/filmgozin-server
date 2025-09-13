@@ -195,9 +195,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'phone_number', 'email', 'avatar', 'first_name', 'last_name',
             'bio', 'birth_date', 'gender', 'city', 'interests', 'liked_movies',
-            'questionnaire_answers', 'answered_questionnaires', 'created_at', 'updated_at'
+            'suggested_movies', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'phone_number', 'created_at', 'updated_at', 'answered_questionnaires')
+        read_only_fields = ('id', 'phone_number', 'created_at', 'updated_at', 'suggested_movies')
 
     def get_phone_number(self, obj):
         return str(obj.user.phone_number)
