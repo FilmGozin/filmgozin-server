@@ -2,8 +2,6 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
-from movie.models import Questionnaire, Question, Choice
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, phone_number=None, email=None, password=None, **extra_fields):
@@ -77,13 +75,6 @@ class User(AbstractUser):
         else:
             return 'Anonymous User'
 
-
-class AnsweredQuestionnaire(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answered_questionnaires')
-    questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
-    answers = models.JSONField(default=dict)  # {question_id: choice_id}
-    answered_at = models.DateTimeField(auto_now_add=True)
-
     
 class Profile(models.Model):
     GENDER_CHOICES = [
@@ -102,7 +93,6 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, blank=True)
     interests = models.JSONField(default=list, blank=True)
     liked_movies = models.JSONField(default=list, blank=True)  # Store movie IDs
-    answered_questionnaires = models.ManyToManyField(AnsweredQuestionnaire, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

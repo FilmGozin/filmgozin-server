@@ -1,6 +1,6 @@
 import pandas as pd
 from django.core.management.base import BaseCommand
-from movie.models import Movie, Genre
+from movie.models import Movie
 from django.utils.dateparse import parse_date
 
 class Command(BaseCommand):
