@@ -6,9 +6,9 @@ from .serializers import PostSerializer, TagSerializer
 from django.utils.text import slugify
 
 
-class PostListCreateByTypeView(generics.ListCreateAPIView):
+class AllPostsView(generics.ListAPIView):
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser]
 
     def get_queryset(self):
         queryset = Post.objects.filter(is_published=True)
@@ -17,6 +17,10 @@ class PostListCreateByTypeView(generics.ListCreateAPIView):
             types_list = [t.strip() for t in types_param.split(',') if t.strip()]
             queryset = queryset.filter(post_type__in=types_list)
         return queryset
+
+class CreatePostView(generics.CreateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         title = serializer.validated_data['title']
@@ -52,7 +56,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance.delete()
 
 
-class TagListView(generics.ListCreateAPIView):
+class AllTagsView(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]

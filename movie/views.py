@@ -279,7 +279,6 @@ class GetRecommendationsView(APIView):
 
     def get(self, request):
         try:
-            # Get user's answers
             user_answers = UserAnswer.objects.filter(user=request.user)
             
             if not user_answers.exists():

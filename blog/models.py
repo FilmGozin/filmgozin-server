@@ -28,14 +28,13 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     author = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='posts')
-    thumbnail = models.ImageField(upload_to='blog_thumbnails/')
+    thumbnail = models.ImageField(upload_to='blog_thumbnails/', blank=True, null=True)
     post_type = models.CharField(
         max_length=20,
         choices=PostType.choices,
         default=PostType.MOVIE
     )
     content = models.TextField()
-    release_date = models.DateField()
     tags = models.ManyToManyField(Tag, related_name='posts')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,4 +55,4 @@ class Post(models.Model):
         return self.title
 
     class Meta:
-        ordering = ['-release_date', '-created_at']
+        ordering = ['-created_at']

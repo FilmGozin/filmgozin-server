@@ -25,9 +25,11 @@ urlpatterns = [
     # Search through dataset
     path('search/', MovieSearchView.as_view(), name='search'),
     
-    # Recommendation questions and answers
+    # Questionnare
     path('questions/', RecommendationQuestionsView.as_view(), name='recommendation-questions'),
     path('answers/', UserAnswersView.as_view(), name='user-answers'),
+
+    # Recommendor
     path('recommendations/', GetRecommendationsView.as_view(), name='recommendations'),
     path('similar/', SimilarMoviesView.as_view(), name='similar-movies'),
     

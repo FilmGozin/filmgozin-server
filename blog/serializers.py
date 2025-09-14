@@ -23,9 +23,17 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'slug', 'author', 'author_name', 'author_avatar',
-                 'thumbnail', 'post_type', 'content', 'release_date', 'tags',
+                 'thumbnail', 'post_type', 'content', 'tags',
                  'tag_names', 'created_at', 'updated_at', 'is_published')
         read_only_fields = ('slug', 'created_at', 'updated_at')
+    
+    def validate(self, attrs):
+        unknown_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unknown_fields:
+            raise serializers.ValidationError({
+                'extra_fields': f'Unknown field(s) in input: {", ".join(unknown_fields)}'
+            })
+        return super().validate(attrs)
 
     def get_author_name(self, obj):
         profile = obj.author.profile

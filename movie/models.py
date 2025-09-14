@@ -76,7 +76,7 @@ class UserPreference(models.Model):
 
 class RecommendationQuestion(models.Model):
     question_text = models.TextField()
-    question_text_fa = models.TextField(null=True, blank=True)  # Persian question
+    question_text_fa = models.TextField(null=True, blank=True)
     question_type = models.CharField(max_length=20)  # single, multiple, range
     options = models.JSONField(null=True, blank=True)  # For multiple choice questions
     is_active = models.BooleanField(default=True)

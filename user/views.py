@@ -465,6 +465,13 @@ class ProfileView(generics.RetrieveUpdateAPIView):
                 instance = self.get_object()
                 
                 data = request.data.copy()
+
+
+                phone_number = data.get('phone_number')
+                if isinstance(phone_number, list):
+                    phone_number = ''.join(map(str, phone_number))
+                    data['phone_number'] = phone_number
+
                 
                 phone_number = data.pop('phone_number', None)
                 
