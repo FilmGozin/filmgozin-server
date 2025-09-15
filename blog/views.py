@@ -18,6 +18,7 @@ class AllPostsView(generics.ListAPIView):
             queryset = queryset.filter(post_type__in=types_list)
         return queryset
 
+
 class CreatePostView(generics.CreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
