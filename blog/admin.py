@@ -5,20 +5,19 @@ from django.utils.translation import gettext_lazy as _
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'post_type', 'release_date', 'is_published', 'created_at')
-    list_filter = ('post_type', 'is_published', 'release_date', 'created_at', 'tags')
+    list_display = ('title', 'author', 'post_type', 'is_published', 'created_at')
+    list_filter = ('post_type', 'is_published', 'created_at', 'tags')
     search_fields = ('title', 'content', 'author__phone_number', 'author__email', 'author__username')
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ('tags',)
     readonly_fields = ('created_at', 'updated_at')
-    date_hierarchy = 'release_date'
     list_editable = ('is_published',)
-    ordering = ('-release_date', '-created_at')
+    # ordering = ('-created_at')
     list_per_page = 25
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'author', 'post_type')}),
         (_('Content'), {'fields': ('content', 'thumbnail')}),
-        (_('Metadata'), {'fields': ('release_date', 'tags', 'is_published')}),
+        (_('Metadata'), {'fields': ('tags', 'is_published')}),
         (_('Timestamps'), {'fields': ('created_at', 'updated_at')}),
     )
 
