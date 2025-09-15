@@ -218,9 +218,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.c1.liara.email'
 EMAIL_PORT = 465
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = ''  
-EMAIL_HOST_PASSWORD = ''
-DEFAULT_FROM_EMAIL = ''
+EMAIL_HOST_USER = 'blissful_khayyam_as056d'  
+EMAIL_HOST_PASSWORD = 'a22ce30b-b1fa-4668-9ba2-76294435a47d'
+DEFAULT_FROM_EMAIL = 'info@filmgozin.com'
+EMAIL_USE_TLS = False # Disable STARTTLS 
+EMAIL_USE_SSL = True  # Force TLS
 
 # Frontend URL for email verification links
 FRONTEND_URL = 'https://filmgozin.com'
