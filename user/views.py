@@ -48,15 +48,15 @@ def send_verification_email(user):
         user.email_verification_expires = timezone.now() + timedelta(hours=24)
         user.save()
         
-        subject = 'Verify your email address - FilmGozin'
+        subject = 'Verify Your Email - FilmGozin'
         message = f"""
         Hello {user.username},
         
-        Please verify your email address by clicking the link below:
+        Please verify your email address by entering below token:
         
-        {settings.FRONTEND_URL}/verify-email?token={token}
+        {token}
         
-        This link will expire in 24 hours.
+        This token will expire in 24 hours.
         
         If you didn't create an account, please ignore this email.
         

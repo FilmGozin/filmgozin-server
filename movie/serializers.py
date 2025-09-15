@@ -35,4 +35,4 @@ class UserAnswerSerializer(serializers.ModelSerializer):
 
 class MovieSimilarityRequestSerializer(serializers.Serializer):
     movie_name = serializers.CharField(max_length=255)
-    limit = serializers.IntegerField(default=10, min_value=1, max_value=50) 
+    limit = serializers.IntegerField(default=1, min_value=1, max_value=50) 
