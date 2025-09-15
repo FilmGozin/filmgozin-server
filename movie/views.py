@@ -58,7 +58,7 @@ class MovieDetailView(APIView):
 
 
 class MovieListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = MovieSerializer
 
     def get(self, request):

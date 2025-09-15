@@ -5,6 +5,7 @@ from .models import Movie
 import re
 from django.db.models import Q
 
+
 class MovieRecommender:
     def __init__(self):
         self.vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
@@ -14,7 +15,6 @@ class MovieRecommender:
 
     def _prepare_feature_matrix(self):
         try:
-            # Get all movies
             self.movies = list(Movie.objects.all())
             
             if not self.movies:
@@ -87,7 +87,6 @@ class MovieRecommender:
             if not self.movies:
                 return []
             
-            # Initialize weights for different movie aspects
             weights = {
                 'genre': 0.4,
                 'year': 0.2,
@@ -96,17 +95,14 @@ class MovieRecommender:
                 'type': 0.1
             }
             
-            # Process user answers
             preferences = self._process_user_answers(user_answers)
             
-            # Filter and score movies
             scored_movies = []
             for movie in self.movies:
                 score = self._calculate_movie_score(movie, preferences, weights)
-                if score > 0:  # Only include movies with some match
+                if score > 0:
                     scored_movies.append((movie, score))
             
-            # Sort by score and return top movies
             scored_movies.sort(key=lambda x: x[1], reverse=True)
             return [movie for movie, _ in scored_movies[:limit]]
             
@@ -150,12 +146,10 @@ class MovieRecommender:
         try:
             score = 0
             
-            # Genre score
             if preferences['genres'] and movie.genre:
                 genre_match = 1 if movie.genre in preferences['genres'] else 0
                 score += weights['genre'] * genre_match
             
-            # Year score
             if preferences['year_range'] and movie.release_year:
                 try:
                     min_year, max_year = map(int, preferences['year_range'])
@@ -164,18 +158,15 @@ class MovieRecommender:
                 except (ValueError, TypeError):
                     pass
             
-            # Rating score
             if preferences['min_rating']:
                 rating = movie.imdb_rating or movie.tmdb_rating
                 if rating and rating >= preferences['min_rating']:
                     score += weights['rating']
             
-            # Language score
             if preferences['languages'] and movie.original_language:
                 if movie.original_language in preferences['languages']:
                     score += weights['language']
             
-            # Type score (movie/series)
             if preferences['movie_type']:
                 if preferences['movie_type'] == 'movie' and not movie.is_tv_series:
                     score += weights['type']
