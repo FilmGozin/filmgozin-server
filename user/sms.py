@@ -13,7 +13,6 @@ class SMSProvider(ABC):
 
 
 class ConsoleProvider(SMSProvider):
-    """Development provider that just prints the OTP to console"""
 
     def send_otp(self, phone_number: str, code: str) -> bool:
         message = f"\n-----------------\nSMS to {phone_number}\nYour verification code: {code}\n-----------------\n"
@@ -23,7 +22,6 @@ class ConsoleProvider(SMSProvider):
 
 
 class GhasedakProvider(SMSProvider):
-    """Ghasedak SMS Provider - https://ghasedak.me/"""
 
     def send_otp(self, phone_number: str, code: str) -> bool:
         try:
@@ -61,30 +59,11 @@ class GhasedakProvider(SMSProvider):
             return False
 
 
-class KavenegarProvider(SMSProvider):
-    """Kavenegar SMS Provider"""
-
-    def send_otp(self, phone_number: str, code: str) -> bool:
-        try:
-            from kavenegar import KavenegarAPI
-            api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
-            params = {
-                'receptor': str(phone_number),
-                'message': f'کد تایید شما در فیلم‌گزین: {code}',
-            }
-            api.sms_send(params)
-            return True
-        except Exception as e:
-            logger.error(f"Failed to send SMS via Kavenegar: {e}")
-            return False
-
-
 def get_sms_provider() -> SMSProvider:
     provider_name = settings.SMS_PROVIDER
     providers = {
         'console': ConsoleProvider,
         'ghasedak': GhasedakProvider,
-        'kavenegar': KavenegarProvider,
     }
     provider_class = providers.get(provider_name.lower(), GhasedakProvider)
     return provider_class()
